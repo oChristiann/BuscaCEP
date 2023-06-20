@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulário com Validação (Bootstrap foi utilizado)</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+  <style>
+    h1{
+        font-size: 28px;
+    }
+    h6{
+        color: red;
+        text-align: center;
+    }
+
+    hr{
+        border: 1px solid black;
+    }
+</style>
+
+</head>
+
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center">Formulário com Validação (Bootstrap foi utilizado)</h1>
+    <hr> <br>
+    <form>
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="nome">Nome</label>
+          <input type="text" class="form-control" id="nome" aria-describedby="emailHelp">
+        </div>
+        <div class="form-group col-md-6">
+          <label for="sobrenome">Sobrenome</label>
+          <input type="text" class="form-control" id="sobrenome" aria-describedby="emailHelp">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="exampleInputEmail1">Email</label>
+        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label for="cep">CEP</label>
+          <div class="input-group">
+            <input type="text" class="form-control" id="cep" aria-describedby="emailHelp" data-mask="00000-000" placeholder="00000-000">
+            <div class="input-group-append">
+              <button class="btn btn-primary" type="button" id="buscarCep" disabled>Buscar</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-group col-md-4">
+          <label for="bairro">Bairro</label>
+          <input type="text" class="form-control" id="bairro" aria-describedby="emailHelp">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="rua">Rua</label>
+          <input type="text" class="form-control" id="rua" aria-describedby="emailHelp">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="cidade">Cidade</label>
+          <input type="text" class="form-control" id="cidade" aria-describedby="emailHelp">
+        </div>
+        <div class="form-group col-md-6">
+          <label for="estado">Estado</label>
+          <input type="text" class="form-control" id="estado" aria-describedby="emailHelp">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <button type="button" class="btn btn-secondary" id="limparDados">Limpar</button>
+      </div>
+    </form>
+  </div>
+
+  <h6> A busca pelo CEP só será feita assim que os campos "Nome", "Sobrenome" e "Email" forem preenchidos! </h6>
+
+  <!-- Bootstrap JS (Optional, if you need to use JS) -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      // Aplicar máscara no campo CEP
+      $('#cep').mask('00000-000');
+  
+      function validarCampos() {
+        var nome = $('#nome').val().trim();
+        var sobrenome = $('#sobrenome').val().trim();
+        var email = $('#exampleInputEmail1').val().trim();
+  
+        return nome !== '' && sobrenome !== '' && email !== '';
+      }
+  
+      $('#nome, #sobrenome, #exampleInputEmail1').on('input', function() {
+        if (validarCampos()) {
+          $('#buscarCep').prop('disabled', false);
+        } else {
+          $('#buscarCep').prop('disabled', true);
+        }
+  
+        // Ocultar ou exibir o elemento h6 com base na validação dos campos
+        if (validarCampos()) {
+          $('h6').hide();
+        } else {
+          $('h6').show();
+        }
+      });
+  
+      $('#buscarCep').on('click', function() {
+        var cep = $('#cep').val().replace(/\D/g, '');
+  
+        if (validarCampos() && cep.length === 8) {
+          $.getJSON(`https://viacep.com.br/ws/${cep}/json/`, function(data) {
+            if (!data.erro) {
+              $('#bairro').val(data.bairro);
+              $('#rua').val(data.logradouro);
+              $('#cidade').val(data.localidade);
+              $('#estado').val(data.uf);
+            }
+          });
+        }
+      });
+  
+      $('#limparDados').on('click', function() {
+        $('input').val('');
+        $('#buscarCep').prop('disabled', true);
+  
+        // Exibir o elemento h6 ao limpar os campos
+        $('h6').show();
+      });
+    });
+  </script>
+  
+</body>
+
+</html>
